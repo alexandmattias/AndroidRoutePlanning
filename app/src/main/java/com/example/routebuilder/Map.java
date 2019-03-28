@@ -2,6 +2,8 @@ package com.example.routebuilder;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -11,15 +13,25 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap gMap;
 
-    private Button mButtonSaveRoute;
-    private Button mButtonAddMarker;
+    private EditText mStartLocation;
+    private EditText mDestination;
+    private EditText mWaypoint;
 
-    private EditText mRouteName;
-    private EditText mMarkerName;
+    private Button mSetStart;
+    private Button mSetDestination;
+    private Button mSetWaypoint;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    private ArrayList<ListItem> mItemList;
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     @Override
@@ -35,6 +47,19 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
+
+        mItemList = new ArrayList<>();
+        mItemList.add(new ListItem("Karjaa"));
+        mItemList.add(new ListItem("Helsinki"));
+        mItemList.add(new ListItem("Turku"));
+
+        mRecyclerView = findViewById(R.id.recyclerView_waypoints);
+        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new WaypointAdapter(mItemList);
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {

@@ -11,21 +11,35 @@
         android:id="@+id/button_addWaypoint"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="80dp"
-        android:layout_height="43dp"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:background="@color/colorAccent"
         android:text="Add"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintStart_toEndOf="@+id/et_addWaypoint2"
-        app:layout_constraintTop_toBottomOf="@+id/button_setEnd" />
+        app:layout_constraintTop_toTopOf="@+id/et_addWaypoint2" />
+
+    <Button
+        android:id="@+id/button_createRoute"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="98dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/colorAccent"
+        android:text="Create route"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView_waypoints" />
 
     <EditText
         android:id="@+id/et_addWaypoint2"
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="68dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Waypoint"
@@ -33,27 +47,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.191"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_setStart" />
+        app:layout_constraintTop_toBottomOf="@+id/et_addWaypoint" />
 
     <Button
         android:id="@+id/button_setEnd"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="80dp"
-        android:layout_height="43dp"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:background="@color/colorAccent"
         android:text="Set"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintStart_toEndOf="@+id/et_addWaypoint"
-        app:layout_constraintTop_toBottomOf="@+id/button_setStart" />
+        app:layout_constraintTop_toTopOf="@+id/et_addWaypoint" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="337dp"
-        android:layout_height="325dp"
+        android:layout_height="269dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:apiKey="@string/google_maps_key"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +78,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Route name"
@@ -82,7 +94,6 @@
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Start location"
         android:inputType="textPostalAddress"
@@ -94,7 +105,6 @@
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="End location"
@@ -108,24 +118,24 @@
         android:id="@+id/button_setStart"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="80dp"
-        android:layout_height="43dp"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@color/colorAccent"
         android:text="Set"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintStart_toEndOf="@+id/et_setStart"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
+        app:layout_constraintTop_toTopOf="@+id/et_setStart" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_waypoints"
-        android:scrollbars="vertical"
-        android:layout_width="338dp"
-        android:layout_height="155dp"
+        android:layout_width="337dp"
+        android:layout_height="116dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_addWaypoint2" />
 </android.support.constraint.ConstraintLayout>
