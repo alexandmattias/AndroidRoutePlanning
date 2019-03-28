@@ -16,17 +16,21 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
+    // Google map vars
     private MapView mapView;
     private GoogleMap gMap;
 
+    // User input text fields for start, end and waypoint
     private EditText mStartLocation;
     private EditText mDestination;
     private EditText mWaypoint;
 
+    // Buttons to set start, destionation and waypoint
     private Button mSetStart;
     private Button mSetDestination;
     private Button mSetWaypoint;
 
+    // RecyclerView waypoints
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -39,6 +43,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+
+        buildGMap(savedInstanceState);
+        createMItemList();
+        buildRecyclerView();
+    }
+
+    private void buildGMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
         if (savedInstanceState != null){
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
@@ -47,20 +58,24 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
+    }
 
-        mItemList = new ArrayList<>();
-        mItemList.add(new ListItem("Karjaa"));
-        mItemList.add(new ListItem("Helsinki"));
-        mItemList.add(new ListItem("Turku"));
-
+    private void buildRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView_waypoints);
         mLayoutManager = new LinearLayoutManager(this);
         mAdapter = new WaypointAdapter(mItemList);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-
     }
+
+    private void createMItemList() {
+        mItemList = new ArrayList<>();
+        mItemList.add(new ListItem("Karjaa"));
+        mItemList.add(new ListItem("Helsinki"));
+        mItemList.add(new ListItem("Turku"));
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
