@@ -10,7 +10,7 @@ public class Route {
     Long start;
     Long destination;
     LatLng location;
-    List <Route>  waypoints = new ArrayList<>();
+    List <LatLng>  waypoints = new ArrayList<>();
 
 
     public Route(Long name){
