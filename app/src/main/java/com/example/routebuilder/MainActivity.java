@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         mButtonAddRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), map.class);
+                Intent intent = new Intent(getApplicationContext(), Map.class);
                 startActivity(intent);
             }
         });

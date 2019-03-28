@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Route {
-    Long name;
+    private Long name;
     Long start;
     Long destination;
     LatLng location;
