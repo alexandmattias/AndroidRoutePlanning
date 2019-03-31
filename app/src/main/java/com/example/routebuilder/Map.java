@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,7 +40,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private WaypointAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<WaypointListItem> mWaypointList;
+    private ArrayList<WaypointItem> mWaypointList;
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     @Override
@@ -51,13 +50,15 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         buildGMap(savedInstanceState);
         createMItemList();
         buildRecyclerView();
-        mRouteStart = findViewById(R.id.et_SetStart);
-        mRouteDestionation = findViewById(R.id.et_SetEnd);
-        mWaypoint = findViewById(R.id.et_AddWaypoint);
         setButtons();
     }
 
     private void setButtons() {
+        // EditTexts for button usage
+        mRouteStart = findViewById(R.id.et_SetStart);
+        mRouteDestionation = findViewById(R.id.et_SetEnd);
+        mWaypoint = findViewById(R.id.et_AddWaypoint);
+        // Buttons
         mSetStart = findViewById(R.id.button_setStart);
         mSetDestination = findViewById(R.id.button_setEnd);
         mSetWaypoint = findViewById(R.id.button_addWaypoint);
@@ -69,6 +70,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 addMarker(mRouteStart.getText().toString());
             }
         });
+        // Destination button listener
         mSetDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,12 +117,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     // Insert an item at a specific location
     public void insertItem(int position, String waypoint){
-        mWaypointList.add(position, new WaypointListItem(waypoint));
+        mWaypointList.add(position, new WaypointItem(waypoint));
         mAdapter.notifyItemInserted(position);
     }
     // Insert and item to the end of the RecyclerView list
     public void insertItemAtEnd(String waypoint){
-        mWaypointList.add(new WaypointListItem(waypoint));
+        mWaypointList.add(new WaypointItem(waypoint));
         mAdapter.notifyDataSetChanged();
     }
     // Remove an item at the specified location
@@ -131,7 +133,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private void createMItemList() {
         mWaypointList = new ArrayList<>();
-        mWaypointList.add(new WaypointListItem("Karjaa"));
+        mWaypointList.add(new WaypointItem("Karjaa"));
     }
 
     //-----------------------------------

@@ -5,14 +5,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.WaypointViewHolder> {
-    private ArrayList<WaypointListItem> mWaypointList;
+    private ArrayList<WaypointItem> mWaypointList;
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener{
@@ -45,7 +44,7 @@ public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.Waypoi
     }
 
 
-    public WaypointAdapter(ArrayList<WaypointListItem> waypointList){
+    public WaypointAdapter(ArrayList<WaypointItem> waypointList){
         mWaypointList = waypointList;
     }
     @NonNull
@@ -58,7 +57,7 @@ public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.Waypoi
 
     @Override
     public void onBindViewHolder(@NonNull WaypointViewHolder waypointViewHolder, int i) {
-        WaypointListItem currentItem = mWaypointList.get(i);
+        WaypointItem currentItem = mWaypointList.get(i);
         waypointViewHolder.mDeleteWaypoint.setImageResource(currentItem.getImage());
         waypointViewHolder.mTextView.setText(currentItem.getmName());
     }

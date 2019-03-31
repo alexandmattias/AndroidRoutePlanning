@@ -1,9 +1,9 @@
 package com.example.routebuilder;
 
-public class WaypointListItem {
+public class WaypointItem {
     private String mName;
-    private int mImageResource = R.drawable.ic_clear_black_24dp;
-    public WaypointListItem(String name){
+    private int mImageResource = R.drawable.ic_clear;
+    public WaypointItem(String name){
         mName = name;
     }
 
