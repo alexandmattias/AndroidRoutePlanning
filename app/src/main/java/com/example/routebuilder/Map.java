@@ -4,8 +4,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,34 +24,118 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap gMap;
 
     // User input text fields for start, end and waypoint
-    private EditText mStartLocation;
-    private EditText mDestination;
+    private EditText mRouteName;
+    private EditText mRouteStart;
+    private EditText mRouteDestionation;
     private EditText mWaypoint;
 
     // Buttons to set start, destionation and waypoint
     private Button mSetStart;
     private Button mSetDestination;
     private Button mSetWaypoint;
+    // Button the create the route
+    private Button mCreateRoute;
 
     // RecyclerView waypoints
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private WaypointAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<ListItem> mItemList;
+    private ArrayList<WaypointListItem> mWaypointList;
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-
         buildGMap(savedInstanceState);
         createMItemList();
         buildRecyclerView();
+        mRouteStart = findViewById(R.id.et_SetStart);
+        mRouteDestionation = findViewById(R.id.et_SetEnd);
+        mWaypoint = findViewById(R.id.et_AddWaypoint);
+        setButtons();
     }
 
+    private void setButtons() {
+        mSetStart = findViewById(R.id.button_setStart);
+        mSetDestination = findViewById(R.id.button_setEnd);
+        mSetWaypoint = findViewById(R.id.button_addWaypoint);
+        mCreateRoute = findViewById(R.id.button_createRoute);
+        // Start location button listener
+        mSetStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addMarker(mRouteStart.getText().toString());
+            }
+        });
+        mSetDestination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addMarker(mRouteDestionation.getText().toString());
+            }
+        });
+        mSetWaypoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mWaypoint.getText() != null){
+                    addMarker(mWaypoint.getText().toString());
+                    insertItemAtEnd(mWaypoint.getText().toString());
+                    mWaypoint.setText("");
+
+                } else {
+                    Toast waypointToast = Toast.makeText(getApplicationContext(), "Requires an input", Toast.LENGTH_SHORT);
+                    waypointToast.show();
+                }
+            }
+        });
+    }
+
+
+    // RecyclerView setup
+    private void buildRecyclerView() {
+        mRecyclerView = findViewById(R.id.recyclerView_waypoints);
+        // Set layoutManager and Adapter
+        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new WaypointAdapter(mWaypointList);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+
+        // Click listener on X to delete the item
+        mAdapter.setOnItemClickListener(new WaypointAdapter.OnItemClickListener() {
+            @Override
+            public void onDeleteClick(int position) {
+                removeItem(position);
+            }
+        });
+    }
+
+    //----------------------------------------
+    // Functions for removing/adding/changing items in the WaypointList
+
+    // Insert an item at a specific location
+    public void insertItem(int position, String waypoint){
+        mWaypointList.add(position, new WaypointListItem(waypoint));
+        mAdapter.notifyItemInserted(position);
+    }
+    // Insert and item to the end of the RecyclerView list
+    public void insertItemAtEnd(String waypoint){
+        mWaypointList.add(new WaypointListItem(waypoint));
+        mAdapter.notifyDataSetChanged();
+    }
+    // Remove an item at the specified location
+    public void removeItem(int position){
+        mWaypointList.remove(position);
+        mAdapter.notifyItemRemoved(position);
+    }
+
+    private void createMItemList() {
+        mWaypointList = new ArrayList<>();
+        mWaypointList.add(new WaypointListItem("Karjaa"));
+    }
+
+    //-----------------------------------
+    // Google map function overrides
     private void buildGMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
         if (savedInstanceState != null){
@@ -59,23 +146,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
     }
-
-    private void buildRecyclerView() {
-        mRecyclerView = findViewById(R.id.recyclerView_waypoints);
-        mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new WaypointAdapter(mItemList);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-    }
-
-    private void createMItemList() {
-        mItemList = new ArrayList<>();
-        mItemList.add(new ListItem("Karjaa"));
-        mItemList.add(new ListItem("Helsinki"));
-        mItemList.add(new ListItem("Turku"));
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -88,6 +158,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         mapView.onSaveInstanceState(mapViewBundle);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -127,5 +198,18 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         LatLng hki = new LatLng(60.1699, 24.9384);
         gMap.moveCamera(CameraUpdateFactory.newLatLng(hki));
     }
+    // Add a marker to the google map
+    private void addMarker(String location) {
+        //TODO: Use Geocoding API to get LatLng and place a marker
+        updateShortestRoute();
+    }
+
+    // Draw the shortest route on the map
+    private void updateShortestRoute() {
+        //TODO: Draw the shorest route using Directions API
+    }
+
+    // Google map functions end
+    //----------------------------
 
 }

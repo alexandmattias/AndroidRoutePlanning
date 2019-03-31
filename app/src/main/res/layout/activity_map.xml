@@ -17,8 +17,8 @@
         android:background="@color/colorAccent"
         android:text="Add"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintStart_toEndOf="@+id/et_addWaypoint2"
-        app:layout_constraintTop_toTopOf="@+id/et_addWaypoint2" />
+        app:layout_constraintStart_toEndOf="@+id/et_AddWaypoint"
+        app:layout_constraintTop_toTopOf="@+id/et_AddWaypoint" />
 
     <Button
         android:id="@+id/button_createRoute"
@@ -36,7 +36,7 @@
         app:layout_constraintTop_toBottomOf="@+id/recyclerView_waypoints" />
 
     <EditText
-        android:id="@+id/et_addWaypoint2"
+        android:id="@+id/et_AddWaypoint"
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -47,7 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.191"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_addWaypoint" />
+        app:layout_constraintTop_toBottomOf="@+id/et_SetEnd" />
 
     <Button
         android:id="@+id/button_setEnd"
@@ -59,8 +59,8 @@
         android:background="@color/colorAccent"
         android:text="Set"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintStart_toEndOf="@+id/et_addWaypoint"
-        app:layout_constraintTop_toTopOf="@+id/et_addWaypoint" />
+        app:layout_constraintStart_toEndOf="@+id/et_SetEnd"
+        app:layout_constraintTop_toTopOf="@+id/et_SetEnd" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
@@ -71,10 +71,10 @@
         android:apiKey="@string/google_maps_key"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_SetName" />
+        app:layout_constraintTop_toBottomOf="@+id/et_SetName" />
 
     <EditText
-        android:id="@+id/editText_SetName"
+        android:id="@+id/et_SetName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -90,7 +90,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/et_setStart"
+        android:id="@+id/et_SetStart"
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
@@ -101,7 +101,7 @@
         app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
     <EditText
-        android:id="@+id/et_addWaypoint"
+        android:id="@+id/et_SetEnd"
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -112,7 +112,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.191"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_setStart" />
+        app:layout_constraintTop_toBottomOf="@+id/et_SetStart" />
 
     <Button
         android:id="@+id/button_setStart"
@@ -124,8 +124,8 @@
         android:background="@color/colorAccent"
         android:text="Set"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintStart_toEndOf="@+id/et_setStart"
-        app:layout_constraintTop_toTopOf="@+id/et_setStart" />
+        app:layout_constraintStart_toEndOf="@+id/et_SetStart"
+        app:layout_constraintTop_toTopOf="@+id/et_SetStart" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_waypoints"
@@ -137,5 +137,5 @@
         android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_addWaypoint2" />
+        app:layout_constraintTop_toBottomOf="@+id/et_AddWaypoint" />
 </android.support.constraint.ConstraintLayout>
