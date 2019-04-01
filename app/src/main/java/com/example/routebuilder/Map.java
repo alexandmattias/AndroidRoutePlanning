@@ -91,6 +91,22 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
         });
+        mCreateRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = mRouteName.getText().toString();
+                String start = mRouteStart.getText().toString();
+                String dest = mRouteDestionation.getText().toString();
+                ArrayList<String> waypoints = new ArrayList<>();
+                for (WaypointItem item : mWaypointList){
+                    waypoints.add(item.getName());
+                }
+                //TODO: Send route to MainActivity
+                RouteItem route = new RouteItem(name,start,dest, waypoints);
+                // Finish activity
+                finish();
+            }
+        });
     }
 
 

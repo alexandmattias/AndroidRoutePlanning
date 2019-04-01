@@ -12,16 +12,20 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private Button mButtonAddRoute;
-    ArrayList<RouteItem> routeList;
+
+    // RecyclerView variables
     private RecyclerView mRecyclerView;
     private RouteAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    // List that stores the items needed for recyclerView
+    ArrayList<RouteItem> routeList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setButtons();
         routeList = new ArrayList<>();
+        //TODO: Load stored data into routeList
         ArrayList<String> array = new ArrayList<>();
         array.add("0");
         array.add("1");
@@ -73,5 +77,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Add a new route to the routelist
+    public void addToRouteList(RouteItem newRoute){
+        routeList.add(newRoute);
+        mAdapter.notifyDataSetChanged();
     }
 }

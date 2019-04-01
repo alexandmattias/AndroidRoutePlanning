@@ -59,7 +59,7 @@ public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.Waypoi
     public void onBindViewHolder(@NonNull WaypointViewHolder waypointViewHolder, int i) {
         WaypointItem currentItem = mWaypointList.get(i);
         waypointViewHolder.mDeleteWaypoint.setImageResource(currentItem.getImage());
-        waypointViewHolder.mTextView.setText(currentItem.getmName());
+        waypointViewHolder.mTextView.setText(currentItem.getName());
     }
 
     @Override
