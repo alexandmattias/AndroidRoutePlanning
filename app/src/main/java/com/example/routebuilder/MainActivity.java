@@ -27,33 +27,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setButtons();
         routeList = new ArrayList<>();
-        addNewRoute();
-        ArrayList<String> array = new ArrayList<>();
-        //array.add("0");
-        //array.add("1");
-        //routeList.add(new RouteItem("name", "start", "end", array));
-
         loadData();
+        addNewRoute();
         buildRecycleView();
-
-
     }
 
     private void loadData() {
         if( FileIO.loadRoutes(this) != null) {
             routeList = FileIO.loadRoutes(this);
-            System.out.println("--------");
-            System.out.println("loaded data: "+routeList);
-            System.out.println("--------");
+            System.out.println("Loaded data: "+routeList);
         }
     }
 
     private void saveFile() {
-
         FileIO.saveRoutes(routeList, this);
-        System.out.println("--------");
-        System.out.println("saved data: "+routeList);
-        System.out.println("--------");
+        System.out.println("Saved data: "+routeList);
     }
 
     // Adds a new route to the recyclerView with data from the Map class
@@ -124,9 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 // Start a map intent and open its
                 Intent intent = new Intent(getApplicationContext(), Map.class);
                 startActivity(intent);
-
                 saveFile();
-                loadData();
                 finish();
             }
         });
@@ -134,6 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
     // Add a new route to the routelist
     public void addToRouteList(RouteItem newRoute){
+        ArrayList<String> array = new ArrayList<>();
+        array.add("0");
+        array.add("1");
+        routeList.add(new RouteItem("name", "start", "end", array));
         routeList.add(newRoute);
         mAdapter.notifyDataSetChanged();
     }
