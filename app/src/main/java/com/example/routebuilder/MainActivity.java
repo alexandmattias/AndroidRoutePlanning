@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new RouteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                saveFile();
                 inflateMapWithSelected(position);
             }
 
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         map.putStringArrayListExtra("route", route);
         map.putStringArrayListExtra("waypoints", Route.getWaypoints());
         // Start activity
+
         startActivity(map);
         finish();
     }

@@ -1,8 +1,9 @@
 package com.example.routebuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class RouteItem {
+public class RouteItem implements Serializable {
     private String mName;
     private String mStart;
     private String mDestination;
