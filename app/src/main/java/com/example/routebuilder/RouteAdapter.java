@@ -86,7 +86,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         routeViewHolder.mRouteDelete.setImageResource(currentItem.getImage());
         routeViewHolder.mName.setText(currentItem.getName());
         routeViewHolder.mStart.setText(currentItem.getStart());
-        routeViewHolder.mEnd.setText(currentItem.getEnd());
+        routeViewHolder.mEnd.setText(currentItem.getDestination());
         routeViewHolder.mWaypoints.setText(String.valueOf(currentItem.getWaypointSize()));
     }
 

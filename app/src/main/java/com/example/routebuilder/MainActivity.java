@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         array.add("0");
         array.add("1");
         routeList.add(new RouteItem("name", "start", "end", array));
-
         buildRecycleView();
     }
 
@@ -72,7 +70,20 @@ public class MainActivity extends AppCompatActivity {
     }
     // Inflate the activity_map view with data from the selected position
     private void inflateMapWithSelected(int position){
-        //TODO: Inflate a map view with the info from routeList.get(position)
+        // Create intent
+        Intent map = new Intent(getApplicationContext(), Map.class);
+        ArrayList<String> route = new ArrayList<>();
+        // Get the RouteItem at the position
+        RouteItem Route = routeList.get(position);
+        route.add(Route.getName());
+        route.add(Route.getStart());
+        route.add(Route.getDestination());
+        // Put them into the map intent as StringArrayList
+        map.putStringArrayListExtra("route", route);
+        map.putStringArrayListExtra("waypoints", Route.getWaypoints());
+        // Start activity
+        startActivity(map);
+        finish();
     }
 
     //Remove an item at the specified position

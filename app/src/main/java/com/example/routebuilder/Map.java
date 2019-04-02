@@ -1,6 +1,5 @@
 package com.example.routebuilder;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     // User input text fields for start, end and waypoint
     private EditText mRouteName;
     private EditText mRouteStart;
-    private EditText mRouteDestionation;
+    private EditText mRouteDestination;
     private EditText mWaypoint;
 
     // Buttons to set start, destionation and waypoint
@@ -50,16 +49,41 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         buildGMap(savedInstanceState);
-        createMItemList();
-        buildRecyclerView();
         setButtons();
+        if (getIntent().getExtras() != null){
+            loadData();
+        } else {
+            createMItemList();
+        }
+        buildRecyclerView();
+
+
+    }
+
+    private void loadData() {
+        mWaypointList = new ArrayList<>();
+        ArrayList<String> route;
+        ArrayList<String> waypoints;
+        if (getIntent().getStringArrayListExtra("route") != null){
+            route = getIntent().getStringArrayListExtra("route");
+            waypoints = getIntent().getStringArrayListExtra("waypoints");
+            mRouteName.setText(route.get(0));
+            mRouteStart.setText(route.get(1));
+            mRouteDestination.setText(route.get(2));
+
+            for (String waypoint : waypoints){
+                mWaypointList.add(new WaypointItem(waypoint));
+            }
+        }
+
+
     }
 
     private void setButtons() {
         // EditTexts for button usage
         mRouteName = findViewById(R.id.et_SetName);
         mRouteStart = findViewById(R.id.et_SetStart);
-        mRouteDestionation = findViewById(R.id.et_SetEnd);
+        mRouteDestination = findViewById(R.id.et_SetEnd);
         mWaypoint = findViewById(R.id.et_AddWaypoint);
         // Buttons
         mSetStart = findViewById(R.id.button_setStart);
@@ -77,7 +101,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mSetDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMarker(mRouteDestionation.getText().toString());
+                addMarker(mRouteDestination.getText().toString());
             }
         });
         mSetWaypoint.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +124,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 String name;
                 name = mRouteName.getText().toString();
                 String start = mRouteStart.getText().toString();
-                String dest = mRouteDestionation.getText().toString();
+                String dest = mRouteDestination.getText().toString();
                 ArrayList<String> waypoints = new ArrayList<>();
                 ArrayList<String> route = new ArrayList<>();
                 route.add(name);
@@ -109,8 +133,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 for (WaypointItem item : mWaypointList){
                     waypoints.add(item.getName());
                 }
-                //TODO: Send route to MainActivity
-
                 Intent main = new Intent(getApplicationContext(), MainActivity.class);
                 main.putStringArrayListExtra("route", route);
                 main.putStringArrayListExtra("waypoints", waypoints);
