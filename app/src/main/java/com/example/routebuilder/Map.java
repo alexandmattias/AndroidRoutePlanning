@@ -1,5 +1,7 @@
 package com.example.routebuilder;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -55,6 +57,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private void setButtons() {
         // EditTexts for button usage
+        mRouteName = findViewById(R.id.et_SetName);
         mRouteStart = findViewById(R.id.et_SetStart);
         mRouteDestionation = findViewById(R.id.et_SetEnd);
         mWaypoint = findViewById(R.id.et_AddWaypoint);
@@ -94,15 +97,24 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = mRouteName.getText().toString();
+                String name;
+                name = mRouteName.getText().toString();
                 String start = mRouteStart.getText().toString();
                 String dest = mRouteDestionation.getText().toString();
                 ArrayList<String> waypoints = new ArrayList<>();
+                ArrayList<String> route = new ArrayList<>();
+                route.add(name);
+                route.add(start);
+                route.add(dest);
                 for (WaypointItem item : mWaypointList){
                     waypoints.add(item.getName());
                 }
                 //TODO: Send route to MainActivity
-                RouteItem route = new RouteItem(name,start,dest, waypoints);
+
+                Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                main.putStringArrayListExtra("route", route);
+                main.putStringArrayListExtra("waypoints", waypoints);
+                startActivity(main);
                 // Finish activity
                 finish();
             }

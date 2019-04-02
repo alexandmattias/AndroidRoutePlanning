@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 
 import java.util.ArrayList;
@@ -25,13 +26,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setButtons();
         routeList = new ArrayList<>();
-        //TODO: Load stored data into routeList
+        addNewRoute();
         ArrayList<String> array = new ArrayList<>();
         array.add("0");
         array.add("1");
         routeList.add(new RouteItem("name", "start", "end", array));
 
         buildRecycleView();
+    }
+
+    // Adds a new route to the recyclerView with data from the Map class
+    private void addNewRoute() {
+
+        if (getIntent().getStringArrayListExtra("route") != null
+                && getIntent().getStringArrayListExtra("waypoints") != null){
+            // Route name, start, destination
+            ArrayList<String> route = getIntent().getStringArrayListExtra("route");
+            // All waypoints
+            ArrayList<String> waypoints = getIntent().getStringArrayListExtra("waypoints");
+            // Create a routeItem with the necessary data
+            routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+        }
     }
 
     private void buildRecycleView() {
@@ -75,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 // Start a map intent and open its
                 Intent intent = new Intent(getApplicationContext(), Map.class);
                 startActivity(intent);
+                finish();
             }
         });
     }
