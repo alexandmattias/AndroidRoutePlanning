@@ -12,11 +12,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FileIO {
 
-    public static void saveRoutes(HashMap<Long, Route>routes, Activity activity){
+    public static void saveRoutes(ArrayList<RouteItem> routes, Activity activity){
 
         try {
             FileOutputStream fos = activity.openFileOutput("routes", Context.MODE_PRIVATE);
@@ -33,14 +34,14 @@ public class FileIO {
         }
     }
 
-    public static HashMap<Long, Route> loadRoutes(Activity activity){
+    public static ArrayList<RouteItem> loadRoutes(Activity activity){
 
-        HashMap<Long,Route>routes = new HashMap<>();
+        ArrayList<RouteItem>routes = new ArrayList<>();
 
         try {
             FileInputStream fis = activity.openFileInput("routes");
             ObjectInputStream oip = new ObjectInputStream(fis);
-            routes = (HashMap<Long, Route>)oip.readObject();
+            routes = (ArrayList<RouteItem>)oip.readObject();
             oip.close();
             fis.close();
         }

@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private Button mButtonAddRoute;
@@ -27,10 +29,31 @@ public class MainActivity extends AppCompatActivity {
         routeList = new ArrayList<>();
         addNewRoute();
         ArrayList<String> array = new ArrayList<>();
-        array.add("0");
-        array.add("1");
-        routeList.add(new RouteItem("name", "start", "end", array));
+        //array.add("0");
+        //array.add("1");
+        //routeList.add(new RouteItem("name", "start", "end", array));
+
+        loadData();
         buildRecycleView();
+
+
+    }
+
+    private void loadData() {
+        if( FileIO.loadRoutes(this) != null) {
+            routeList = FileIO.loadRoutes(this);
+            System.out.println("--------");
+            System.out.println("loaded data: "+routeList);
+            System.out.println("--------");
+        }
+    }
+
+    private void saveFile() {
+
+        FileIO.saveRoutes(routeList, this);
+        System.out.println("--------");
+        System.out.println("saved data: "+routeList);
+        System.out.println("--------");
     }
 
     // Adds a new route to the recyclerView with data from the Map class
@@ -70,20 +93,9 @@ public class MainActivity extends AppCompatActivity {
     }
     // Inflate the activity_map view with data from the selected position
     private void inflateMapWithSelected(int position){
-        // Create intent
-        Intent map = new Intent(getApplicationContext(), Map.class);
-        ArrayList<String> route = new ArrayList<>();
-        // Get the RouteItem at the position
-        RouteItem Route = routeList.get(position);
-        route.add(Route.getName());
-        route.add(Route.getStart());
-        route.add(Route.getDestination());
-        // Put them into the map intent as StringArrayList
-        map.putStringArrayListExtra("route", route);
-        map.putStringArrayListExtra("waypoints", Route.getWaypoints());
-        // Start activity
-        startActivity(map);
-        finish();
+        //TODO: Inflate a map view with the info from routeList.get(position)
+        //todo: save data
+
     }
 
     //Remove an item at the specified position
@@ -101,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
                 // Start a map intent and open its
                 Intent intent = new Intent(getApplicationContext(), Map.class);
                 startActivity(intent);
+
+                saveFile();
+                loadData();
                 finish();
             }
         });
