@@ -16,6 +16,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
@@ -253,12 +255,23 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     // Add a marker to the google map
     private void addMarker(String location) {
         //TODO: Use Geocoding API to get LatLng and place a marker
-        updateShortestRoute();
     }
 
     // Draw the shortest route on the map
     private void updateShortestRoute() {
         //TODO: Draw the shorest route using Directions API
+        String YOUR_API_KEY = "&key=" + String.valueOf(R.string.google_maps_key);
+        String start = "http://maps.googleapis.com/maps/api/directions/outputFormat?json";
+        String params = "&origin=" + mRouteStart.getText().toString();
+        params += "&destination=" + mRouteDestination.getText().toString();
+        if (!mWaypointList.isEmpty()){
+            params += "&waypoints=optimize:true";
+            for (int i = 0; i < mWaypointList.size(); i++){
+                params += "|"+mWaypointList.get(i).getName();
+            }
+            params += YOUR_API_KEY;
+        }
+        String finalString = start + params + YOUR_API_KEY;
     }
 
     // Google map functions end
