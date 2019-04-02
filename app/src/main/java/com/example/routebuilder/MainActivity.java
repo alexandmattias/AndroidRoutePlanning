@@ -6,11 +6,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private Button mButtonAddRoute;
@@ -25,28 +23,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Start all buttons on the main activity
         setButtons();
         routeList = new ArrayList<>();
-        loadData();
+        // Load previous routes from file storage
+        loadFromFile();
+        // Add the new route if coming from Map class
         addNewRoute();
         buildRecycleView();
     }
 
-    private void loadData() {
+    private void loadFromFile() {
+        // If a save file exists
         if( FileIO.loadRoutes(this) != null) {
+            // Load the saved routes into the routeList
             routeList = FileIO.loadRoutes(this);
-            System.out.println("Loaded data: "+routeList);
+            System.out.println("Loaded data: " + routeList);
         }
     }
 
-    private void saveFile() {
+
+    private void saveToFile() {
+        // Save the routeList to a file
         FileIO.saveRoutes(routeList, this);
-        System.out.println("Saved data: "+routeList);
+        System.out.println("Saved data: " + routeList);
     }
 
     // Adds a new route to the recyclerView with data from the Map class
     private void addNewRoute() {
-
+        // Check that the gets exists
         if (getIntent().getStringArrayListExtra("route") != null
                 && getIntent().getStringArrayListExtra("waypoints") != null){
             // Route name, start, destination
@@ -70,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new RouteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                saveFile();
+                saveToFile();
                 inflateMapWithSelected(position);
             }
 
@@ -80,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     // Inflate the activity_map view with data from the selected position
     private void inflateMapWithSelected(int position){
         // Create intent
@@ -94,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         map.putStringArrayListExtra("route", route);
         map.putStringArrayListExtra("waypoints", Route.getWaypoints());
         // Start activity
-
         startActivity(map);
         finish();
     }
@@ -114,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 // Start a map intent and open its
                 Intent intent = new Intent(getApplicationContext(), Map.class);
                 startActivity(intent);
-                saveFile();
+                saveToFile();
                 finish();
             }
         });
