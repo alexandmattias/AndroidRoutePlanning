@@ -93,9 +93,20 @@ public class MainActivity extends AppCompatActivity {
     }
     // Inflate the activity_map view with data from the selected position
     private void inflateMapWithSelected(int position){
-        //TODO: Inflate a map view with the info from routeList.get(position)
-        //todo: save data
-
+        // Create intent
+        Intent map = new Intent(getApplicationContext(), Map.class);
+        ArrayList<String> route = new ArrayList<>();
+        // Get the RouteItem at the position
+        RouteItem Route = routeList.get(position);
+        route.add(Route.getName());
+        route.add(Route.getStart());
+        route.add(Route.getDestination());
+        // Put them into the map intent as StringArrayList
+        map.putStringArrayListExtra("route", route);
+        map.putStringArrayListExtra("waypoints", Route.getWaypoints());
+        // Start activity
+        startActivity(map);
+        finish();
     }
 
     //Remove an item at the specified position
