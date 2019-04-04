@@ -292,15 +292,30 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         MarkerOptions home = new MarkerOptions();
         MarkerOptions dest = new MarkerOptions();
         // Home marker
-        if (!mRouteStart.getText().toString().equals("")){
-            home.position(getLatLng(mRouteStart.getText().toString()))
-                    .title("Home")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            Marker mhome = gMap.addMarker(home);
-            markers.add(mhome);
-            gMap.moveCamera(CameraUpdateFactory.newLatLng(home.getPosition()));
+        CreateHomeMarker(home);
+        createDestinationMarker(dest);
+        createWaypointMarkers();
+
+        // Updates polyLine to match the new places
+        // Require a start and an end
+        if (home.getPosition() != null && dest.getPosition() != null){
+            drawPolyline();
+        } else {
+            Toast.makeText(getApplicationContext(), "Please make sure there is a start and destination", Toast.LENGTH_SHORT).show();
         }
-        // Destination Marker
+    }
+
+    // Loop through mWaypointList and add all the locations to the map as markers
+    private void createWaypointMarkers() {
+        if (!mWaypointList.isEmpty()){
+            for (WaypointItem item : mWaypointList){
+                markers.add(gMap.addMarker(new MarkerOptions().position(getLatLng(item.getName())).title(item.getName())));
+            }
+        }
+    }
+
+    // Add the destination as a green marker
+    private void createDestinationMarker(MarkerOptions dest) {
         if (!mRouteDestination.getText().toString().equals("")){
             dest.position(getLatLng(mRouteDestination.getText().toString()))
                     .title("Destination")
@@ -308,18 +323,17 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             Marker mDest = gMap.addMarker(dest);
             markers.add(mDest);
         }
-        // Waypoint markers
-        if (!mWaypointList.isEmpty()){
-            for (WaypointItem item : mWaypointList){
-                markers.add(gMap.addMarker(new MarkerOptions().position(getLatLng(item.getName())).title(item.getName())));
-            }
-        }
-        // Updates polyLine to match the new places
-        // Require a start and an end
-        if (home.getPosition() != null && dest.getPosition() != null){
-            drawPolyline();
-        } else {
-            Toast.makeText(getApplicationContext(), "Please make sure there is a start and destination", Toast.LENGTH_SHORT).show();
+    }
+
+    // Add the start as a blue marker
+    private void CreateHomeMarker(MarkerOptions home) {
+        if (!mRouteStart.getText().toString().equals("")){
+            home.position(getLatLng(mRouteStart.getText().toString()))
+                    .title("Home")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            Marker mhome = gMap.addMarker(home);
+            markers.add(mhome);
+            gMap.moveCamera(CameraUpdateFactory.newLatLng(home.getPosition()));
         }
     }
 
