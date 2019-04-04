@@ -50,7 +50,11 @@ public class MainActivity extends AppCompatActivity {
     private void addNewRoute() {
         // Check that the gets exists
         if (getIntent().getStringArrayListExtra("route") != null){
+<<<<<<< HEAD
 
+=======
+            // Route name, start, destination
+>>>>>>> 205f0d11341a8c1acc70f89a07dfa1ba38d24bdd
             ArrayList<String> waypoints = new ArrayList<>();
             ArrayList<String> route = getIntent().getStringArrayListExtra("route");
             // All waypoints
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 waypoints = getIntent().getStringArrayListExtra("waypoints");
             }
             // Create a routeItem with the necessary data
+<<<<<<< HEAD
             // -1 is sent if a new route was created, else it is the position when the route to update is
             if (getIntent().getExtras().getInt("position") != -1){
                 int pos = getIntent().getExtras().getInt("position");
@@ -68,8 +73,23 @@ public class MainActivity extends AppCompatActivity {
                 // 0 = name, 1 = start, 2 = destination
                 routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
             }
+=======
+            if (getIntent().getExtras().getInt("position") != -1){
+                int pos = getIntent().getExtras().getInt("position");
+                updatePreviousRoute(route, waypoints, pos);
+            } else {
+                routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+            }
+
+>>>>>>> 205f0d11341a8c1acc70f89a07dfa1ba38d24bdd
         }
     }
+
+    private void updatePreviousRoute(ArrayList<String> route, ArrayList<String> waypoints, int pos) {
+        routeList.remove(pos);
+        routeList.add(pos, new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+    }
+
 
     private void buildRecycleView() {
         // Find view, create layoutmanager and adapter
