@@ -215,7 +215,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
      * Google Map section
      *
      *****************************************/
-    
+
     private void buildGMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
         if (savedInstanceState != null){
