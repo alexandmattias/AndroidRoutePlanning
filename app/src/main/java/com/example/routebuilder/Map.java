@@ -15,15 +15,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.File;
-import java.nio.file.Path;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
     // Google map vars
     private MapView mapView;
     private GoogleMap gMap;
+    String gKey;
 
     // User input text fields for start, end and waypoint
     private EditText mRouteName;
@@ -45,21 +49,21 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private ArrayList<WaypointItem> mWaypointList;
 
+
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         buildGMap(savedInstanceState);
+        gKey = "&key=" + getString(R.string.google_maps_key);
         setButtons();
         if (getIntent().getExtras() != null){
             loadData();
         } else {
-            createMItemList();
+            createExampleRoute();
         }
         buildRecyclerView();
-
-
     }
 
     private void loadData() {
@@ -96,21 +100,21 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mSetStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMarker(mRouteStart.getText().toString());
+                getLatLng(mRouteStart.getText().toString());
             }
         });
         // Destination button listener
         mSetDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMarker(mRouteDestination.getText().toString());
+                getLatLng(mRouteDestination.getText().toString());
             }
         });
         mSetWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mWaypoint.getText() != null){
-                    addMarker(mWaypoint.getText().toString());
+                    getLatLng(mWaypoint.getText().toString());
                     insertItemAtEnd(mWaypoint.getText().toString());
                     mWaypoint.setText("");
 
@@ -183,13 +187,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mAdapter.notifyItemRemoved(position);
     }
 
-    private void createMItemList() {
+    private void createExampleRoute() {
         mWaypointList = new ArrayList<>();
         mWaypointList.add(new WaypointItem("Karjaa"));
     }
 
     //-----------------------------------
-    // Google map function overrides
+    // Google map functions
     private void buildGMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
         if (savedInstanceState != null){
@@ -250,28 +254,59 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         gMap = googleMap;
         gMap.setMinZoomPreference(12);
         LatLng hki = new LatLng(60.1699, 24.9384);
+        gMap.addMarker(new MarkerOptions().position(hki).snippet("Home"));
         gMap.moveCamera(CameraUpdateFactory.newLatLng(hki));
+        updateShortestRoute();
     }
     // Add a marker to the google map
-    private void addMarker(String location) {
-        //TODO: Use Geocoding API to get LatLng and place a marker
+    private LatLng getLatLng(String location) {
+        String JSONresponse = new String();
+        String YOUR_API_KEY = getString(R.string.google_maps_key);
+        String input = "https://maps.googleapis.com/maps/api/geocode/json?address="
+                + location + "&key=" + YOUR_API_KEY;
+        try {
+            JSONresponse = new HTTPGet().execute(input).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        if (JSONresponse != null) {
+            return JSONreturnData(JSONresponse);
+        } else {
+            Toast.makeText(getApplicationContext(), "Hittade inget data!", Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }
+
+    public LatLng JSONreturnData(String JSONData) {
+        LatLng coordinates = null;
+        try {
+            JSONObject object = new JSONObject(JSONData);
+            Double latitude = object.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+            Double longitude = object.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+            coordinates = new LatLng(latitude, longitude);
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Kunde inte tyda data!", Toast.LENGTH_LONG).show();
+        }
+        return coordinates;
     }
 
     // Draw the shortest route on the map
     private void updateShortestRoute() {
         //TODO: Draw the shorest route using Directions API
-        String YOUR_API_KEY = "&key=" + String.valueOf(R.string.google_maps_key);
-        String start = "http://maps.googleapis.com/maps/api/directions/outputFormat?json";
-        String params = "&origin=" + mRouteStart.getText().toString();
+        String url = "https://maps.googleapis.com/maps/api/directions/json?";
+        String params = "origin=" + mRouteStart.getText().toString();
         params += "&destination=" + mRouteDestination.getText().toString();
         if (!mWaypointList.isEmpty()){
             params += "&waypoints=optimize:true";
             for (int i = 0; i < mWaypointList.size(); i++){
                 params += "|"+mWaypointList.get(i).getName();
             }
-            params += YOUR_API_KEY;
         }
-        String finalString = start + params + YOUR_API_KEY;
+        String queryString = url + params + gKey;
+        System.out.println(queryString);
+
     }
 
     // Google map functions end
