@@ -185,6 +185,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
             startActivity(main);
             finish();
+        } else {
+            Toast.makeText(getApplicationContext(), "Please make sure there is a name, start and destination", Toast.LENGTH_SHORT).show();
+
         }
     }
 
