@@ -26,6 +26,7 @@ public class HTTPGet extends AsyncTask<String, Void, String>
 
         try
         {
+            System.out.println("Making an API call");
             URL url = new URL(strings[0]);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));

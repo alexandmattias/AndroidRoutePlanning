@@ -1,6 +1,7 @@
 package com.example.routebuilder;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,13 +15,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
@@ -28,6 +34,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap gMap;
     String gKey;
+    Polyline line;
+    ArrayList<Marker> markers;
 
     // User input text fields for start, end and waypoint
     private EditText mRouteName;
@@ -100,23 +108,26 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mSetStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getLatLng(mRouteStart.getText().toString());
+                addMarkers();
+                updateShortestRoute();
             }
         });
         // Destination button listener
         mSetDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getLatLng(mRouteDestination.getText().toString());
+                addMarkers();
+                updateShortestRoute();
             }
         });
         mSetWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mWaypoint.getText() != null){
-                    getLatLng(mWaypoint.getText().toString());
                     insertItemAtEnd(mWaypoint.getText().toString());
                     mWaypoint.setText("");
+                    addMarkers();
+                    updateShortestRoute();
 
                 } else {
                     Toast waypointToast = Toast.makeText(getApplicationContext(), "Requires an input", Toast.LENGTH_SHORT);
@@ -252,18 +263,49 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-        gMap.setMinZoomPreference(12);
-        LatLng hki = new LatLng(60.1699, 24.9384);
-        gMap.addMarker(new MarkerOptions().position(hki).snippet("Home"));
-        gMap.moveCamera(CameraUpdateFactory.newLatLng(hki));
+        addMarkers();
         updateShortestRoute();
     }
+
+    private void resetMap(){
+        if (line != null){
+            line.remove();
+        }
+        if (!markers.isEmpty()){
+            for (Marker marker : markers){
+                marker.remove();
+            }
+        }
+
+    }
+    private void addMarkers() {
+        markers = new ArrayList<>();
+        resetMap();
+        MarkerOptions home = new MarkerOptions()
+                .position(getLatLng(mRouteStart.getText().toString()))
+                .title("Home")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        MarkerOptions dest = new MarkerOptions()
+                .position(getLatLng(mRouteDestination.getText().toString()))
+                .title("Destination")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        Marker mhome = gMap.addMarker(home);
+        Marker mDest = gMap.addMarker(dest);
+        markers.add(mhome);
+        markers.add(mDest);
+        for (WaypointItem item : mWaypointList){
+            markers.add(gMap.addMarker(new MarkerOptions().position(getLatLng(item.getName())).title(item.getName())));
+        }
+        gMap.setMinZoomPreference(3);
+        gMap.moveCamera(CameraUpdateFactory.newLatLng(home.getPosition()));
+
+    }
+
     // Add a marker to the google map
     private LatLng getLatLng(String location) {
         String JSONresponse = new String();
-        String YOUR_API_KEY = getString(R.string.google_maps_key);
         String input = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                + location + "&key=" + YOUR_API_KEY;
+                + location + gKey;
         try {
             JSONresponse = new HTTPGet().execute(input).get();
         } catch (InterruptedException e) {
@@ -305,10 +347,68 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
         String queryString = url + params + gKey;
-        System.out.println(queryString);
+        String json = "";
+        try {
+            json = new HTTPGet().execute(queryString).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String poly = "";
+        try {
+            JSONObject obj = new JSONObject(json);
+            poly = obj.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        List<LatLng> list = decodePoly(poly);
+
+        for (int z = 0; z < list.size() - 1; z++) {
+            LatLng src = list.get(z);
+            LatLng dest = list.get(z + 1);
+            line = gMap.addPolyline(new PolylineOptions()
+                    .add(new LatLng(src.latitude, src.longitude),
+                            new LatLng(dest.latitude, dest.longitude))
+                    .width(5).color(Color.BLUE).geodesic(true));
+        }
 
     }
 
+    // https://stackoverflow.com/questions/17425499/how-to-draw-interactive-polyline-on-route-google-maps-v2-android
+    private List<LatLng> decodePoly(String encoded) {
+
+        List<LatLng> poly = new ArrayList<LatLng>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+        }
+
+        return poly;
+    }
     // Google map functions end
     //----------------------------
 
