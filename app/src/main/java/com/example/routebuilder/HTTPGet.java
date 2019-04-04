@@ -22,7 +22,7 @@ public class HTTPGet extends AsyncTask<String, Void, String>
     @Override
     protected String doInBackground(String... strings)
     {
-        String response = new String();
+        String response = "";
 
         try
         {

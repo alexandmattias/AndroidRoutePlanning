@@ -194,10 +194,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         });
     }
 
-    //----------------------------------------
-    // Functions for removing/adding/changing items in the WaypointList
-
-
     // Insert and item to the end of the RecyclerView waypoint list
     public void insertItemAtEnd(String waypoint){
         mWaypointList.add(new WaypointItem(waypoint));
@@ -214,7 +210,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mWaypointList.add(new WaypointItem("Karjaa"));
     }
 
-    // Build gMap
+    /*****************************************
+     *
+     * Google Map section
+     *
+     *****************************************/
+    
     private void buildGMap(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
         if (savedInstanceState != null){
@@ -383,6 +384,22 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
         String queryString = url + params + gKey;
+        String poly = getJSONPolylineOverview(queryString);
+        // Decode the overview_polyline from JSON request
+        List<LatLng> list = decodePoly(poly);
+        for (int z = 0; z < list.size() - 1; z++) {
+            LatLng src = list.get(z);
+            LatLng dest = list.get(z + 1);
+            line = gMap.addPolyline(new PolylineOptions()
+                    .add(new LatLng(src.latitude, src.longitude),
+                            new LatLng(dest.latitude, dest.longitude))
+                    .width(5).color(Color.BLUE).geodesic(true));
+        }
+
+    }
+
+    // Executes the Directions API command, return with the overview_polyline
+    private String getJSONPolylineOverview(String queryString) {
         String json = "";
         try {
             json = new HTTPGet().execute(queryString).get();
@@ -398,26 +415,14 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        // Decode the overview_polyline from JSON request
-        List<LatLng> list = decodePoly(poly);
-        for (int z = 0; z < list.size() - 1; z++) {
-            LatLng src = list.get(z);
-            LatLng dest = list.get(z + 1);
-            line = gMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(src.latitude, src.longitude),
-                            new LatLng(dest.latitude, dest.longitude))
-                    .width(5).color(Color.BLUE).geodesic(true));
-        }
-
+        return poly;
     }
-
-
 
 
     // https://stackoverflow.com/questions/17425499/how-to-draw-interactive-polyline-on-route-google-maps-v2-android
     private List<LatLng> decodePoly(String encoded) {
 
-        List<LatLng> poly = new ArrayList<LatLng>();
+        List<LatLng> poly = new ArrayList<>();
         int index = 0, len = encoded.length();
         int lat = 0, lng = 0;
 
