@@ -69,18 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 // 0 = name, 1 = start, 2 = destination
                 routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
             }
-            if (getIntent().getExtras().getInt("position") != -1){
-                int pos = getIntent().getExtras().getInt("position");
-                updatePreviousRoute(route, waypoints, pos);
-            } else {
-                routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
-            }
         }
-    }
-
-    private void updatePreviousRoute(ArrayList<String> route, ArrayList<String> waypoints, int pos) {
-        routeList.remove(pos);
-        routeList.add(pos, new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
     }
 
 

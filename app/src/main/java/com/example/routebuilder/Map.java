@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap gMap;
     String gKey;
     Polyline line;
+    PolylineOptions polyLine;
     ArrayList<Marker> markers;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
@@ -49,6 +51,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button mSetDestination;
     private Button mSetWaypoint;
     private Button mCreateRoute;
+    private Button mBack;
 
     // RecyclerView
     private RecyclerView mRecyclerView;
@@ -100,11 +103,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mRouteStart = findViewById(R.id.et_SetStart);
         mRouteDestination = findViewById(R.id.et_SetEnd);
         mWaypoint = findViewById(R.id.et_AddWaypoint);
+
         // Buttons
         mSetStart = findViewById(R.id.button_setStart);
         mSetDestination = findViewById(R.id.button_setEnd);
         mSetWaypoint = findViewById(R.id.button_addWaypoint);
         mCreateRoute = findViewById(R.id.button_createRoute);
+        mBack = findViewById(R.id.button_back);
 
         // Button listeners
         // Start, Destionation, Waypoint, Create route
@@ -138,6 +143,14 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 inflateMain();
+            }
+        });
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(main);
+                finish();
             }
         });
     }
@@ -374,6 +387,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     // Draw the shortest route on the map
     // Uses Google Directions API
     private void drawPolyline() {
+        polyLine = new PolylineOptions();
         String url = "https://maps.googleapis.com/maps/api/directions/json?";
         String params = "origin=" + mRouteStart.getText().toString();
         params += "&destination=" + mRouteDestination.getText().toString();
@@ -384,18 +398,11 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
         String queryString = url + params + gKey;
-        String poly = getJSONPolylineOverview(queryString);
+        String overviewPolyline = getJSONPolylineOverview(queryString);
         // Decode the overview_polyline from JSON request
-        List<LatLng> list = decodePoly(poly);
-        for (int z = 0; z < list.size() - 1; z++) {
-            LatLng src = list.get(z);
-            LatLng dest = list.get(z + 1);
-            line = gMap.addPolyline(new PolylineOptions()
-                    .add(new LatLng(src.latitude, src.longitude),
-                            new LatLng(dest.latitude, dest.longitude))
-                    .width(5).color(Color.BLUE).geodesic(true));
-        }
-
+        List<LatLng> polyList = PolyUtil.decode(overviewPolyline);
+        polyLine.addAll(polyList);
+        gMap.addPolyline(polyLine);
     }
 
     // Executes the Directions API command, return with the overview_polyline
@@ -415,42 +422,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return poly;
-    }
-
-
-    // https://stackoverflow.com/questions/17425499/how-to-draw-interactive-polyline-on-route-google-maps-v2-android
-    private List<LatLng> decodePoly(String encoded) {
-
-        List<LatLng> poly = new ArrayList<>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
-        }
-
         return poly;
     }
     // Google map functions end
