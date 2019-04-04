@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class FileIO {
 
     public static void saveRoutes(ArrayList<RouteItem> routes, Activity activity){
-
+        System.out.println("Saving routes");
         try {
             FileOutputStream fos = activity.openFileOutput("routes", Context.MODE_PRIVATE);
             ObjectOutput oop = new ObjectOutputStream(fos);
@@ -32,7 +32,7 @@ public class FileIO {
     }
 
     public static ArrayList<RouteItem> loadRoutes(Activity activity){
-
+        System.out.println("Loading routes");
         ArrayList<RouteItem>routes = new ArrayList<>();
 
         try {

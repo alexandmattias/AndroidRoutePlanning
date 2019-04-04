@@ -35,7 +35,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap gMap;
     String gKey;
-    Polyline line;
     PolylineOptions polyLine;
     ArrayList<Marker> markers;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";

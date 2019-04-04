@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
             }
         }
+        saveToFile();
     }
 
 
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     // Inflate the activity_map view with data from the selected position
     private void inflateMapWithSelected(int position){
         // Create intent
+        saveToFile();
         Intent map = new Intent(getApplicationContext(), Map.class);
         ArrayList<String> route = new ArrayList<>();
         // Get the RouteItem at the position
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     //Remove an item at the specified position
     private void removeItem(int position) {
         routeList.remove(position);
+        saveToFile();
         mAdapter.notifyItemRemoved(position);
     }
 

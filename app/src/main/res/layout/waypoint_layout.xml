@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     app:cardBackgroundColor="@color/colorPrimary"
+    android:layout_margin="5dp"
     app:cardCornerRadius="4dp">
 
     <RelativeLayout
@@ -30,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hello"
+            android:paddingLeft="20dp"
             android:textSize="20sp" />
     </RelativeLayout>
 

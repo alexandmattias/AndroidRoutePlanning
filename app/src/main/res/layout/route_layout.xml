@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center_horizontal"
-    android:layout_width="wrap_content" android:layout_height="wrap_content">
+    android:layout_margin="5dp"
+    android:background="@color/colorPrimary"
+    android:layout_width="300dp" android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/routeName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
+        android:layout_marginStart="20dp"
         android:text="Example route"
         android:textSize="24dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,12 +21,10 @@
         android:id="@+id/routeStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:text="Helsinki"
         android:textSize="18dp"
-        app:layout_constraintEnd_toStartOf="@+id/routeEnd"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routeName" />
 
@@ -32,12 +32,11 @@
         android:id="@+id/routeEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="96dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
         android:text="Turku"
         android:textSize="18dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/routeName" />
+        app:layout_constraintStart_toEndOf="@+id/routeStart"
+        app:layout_constraintTop_toTopOf="@+id/routeStart" />
 
     <TextView
         android:id="@+id/routeWaypoints"
@@ -54,15 +53,13 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="52dp"
         android:text="Waypoints:"
         android:textSize="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/routeEnd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.088"
-        app:layout_constraintStart_toEndOf="@+id/routeEnd"
-        app:layout_constraintTop_toBottomOf="@+id/routeName" />
+        app:layout_constraintTop_toTopOf="@+id/routeEnd"
+        app:layout_constraintVertical_bias="0.307" />
 
     <ImageView
         android:id="@+id/routeDelete"
@@ -73,6 +70,6 @@
         android:layout_marginBottom="8dp"
         android:src="@drawable/ic_clear"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/routeName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
