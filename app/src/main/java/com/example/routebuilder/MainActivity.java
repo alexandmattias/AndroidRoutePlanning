@@ -52,16 +52,30 @@ public class MainActivity extends AppCompatActivity {
     // Adds a new route to the recyclerView with data from the Map class
     private void addNewRoute() {
         // Check that the gets exists
-        if (getIntent().getStringArrayListExtra("route") != null
-                && getIntent().getStringArrayListExtra("waypoints") != null){
+        if (getIntent().getStringArrayListExtra("route") != null){
             // Route name, start, destination
+            ArrayList<String> waypoints = new ArrayList<>();
             ArrayList<String> route = getIntent().getStringArrayListExtra("route");
             // All waypoints
-            ArrayList<String> waypoints = getIntent().getStringArrayListExtra("waypoints");
+            if (getIntent().getStringArrayListExtra("waypoints") != null){
+                waypoints = getIntent().getStringArrayListExtra("waypoints");
+            }
             // Create a routeItem with the necessary data
-            routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+            if (getIntent().getExtras().getInt("position") != -1){
+                int pos = getIntent().getExtras().getInt("position");
+                updatePreviousRoute(route, waypoints, pos);
+            } else {
+                routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+            }
+
         }
     }
+
+    private void updatePreviousRoute(ArrayList<String> route, ArrayList<String> waypoints, int pos) {
+        routeList.remove(pos);
+        routeList.add(pos, new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+    }
+
 
     private void buildRecycleView() {
         // Find view, create layoutmanager and adapter
@@ -97,8 +111,10 @@ public class MainActivity extends AppCompatActivity {
         route.add(Route.getStart());
         route.add(Route.getDestination());
         // Put them into the map intent as StringArrayList
+        map.putExtra("position", position);
         map.putStringArrayListExtra("route", route);
         map.putStringArrayListExtra("waypoints", Route.getWaypoints());
+        map.putExtra("new", false);
         // Start activity
         startActivity(map);
         finish();
@@ -118,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Start a map intent and open its
                 Intent intent = new Intent(getApplicationContext(), Map.class);
+                intent.putExtra("new", true);
                 startActivity(intent);
                 saveToFile();
                 finish();

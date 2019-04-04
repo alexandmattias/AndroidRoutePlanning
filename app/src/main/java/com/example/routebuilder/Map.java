@@ -49,6 +49,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button mSetWaypoint;
     // Button the create the route
     private Button mCreateRoute;
+    private Button mBack;
 
     // RecyclerView waypoints
     private RecyclerView mRecyclerView;
@@ -57,28 +58,30 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private ArrayList<WaypointItem> mWaypointList;
 
+    private int position = -1;
+
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        mWaypointList = new ArrayList<>();
+        markers = new ArrayList<>();
         buildGMap(savedInstanceState);
         gKey = "&key=" + getString(R.string.google_maps_key);
         setButtons();
-        if (getIntent().getExtras() != null){
-            loadData();
-        } else {
-            createExampleRoute();
-        }
         buildRecyclerView();
     }
 
     private void loadData() {
-        mWaypointList = new ArrayList<>();
+
         ArrayList<String> route;
         ArrayList<String> waypoints;
         if (getIntent().getStringArrayListExtra("route") != null){
+            if (getIntent().getExtras() != null){
+                position = getIntent().getExtras().getInt("position");
+            }
             route = getIntent().getStringArrayListExtra("route");
             waypoints = getIntent().getStringArrayListExtra("waypoints");
             mRouteName.setText(route.get(0));
@@ -88,9 +91,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             for (String waypoint : waypoints){
                 mWaypointList.add(new WaypointItem(waypoint));
             }
+            addMarkers();
         }
-
-
     }
 
     private void setButtons() {
@@ -104,12 +106,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mSetDestination = findViewById(R.id.button_setEnd);
         mSetWaypoint = findViewById(R.id.button_addWaypoint);
         mCreateRoute = findViewById(R.id.button_createRoute);
+        mBack = findViewById(R.id.button_back);
         // Start location button listener
         mSetStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addMarkers();
-                updateShortestRoute();
             }
         });
         // Destination button listener
@@ -117,7 +119,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 addMarkers();
-                updateShortestRoute();
             }
         });
         mSetWaypoint.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +128,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     insertItemAtEnd(mWaypoint.getText().toString());
                     mWaypoint.setText("");
                     addMarkers();
-                    updateShortestRoute();
 
                 } else {
                     Toast waypointToast = Toast.makeText(getApplicationContext(), "Requires an input", Toast.LENGTH_SHORT);
@@ -138,23 +138,38 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name;
-                name = mRouteName.getText().toString();
-                String start = mRouteStart.getText().toString();
-                String dest = mRouteDestination.getText().toString();
-                ArrayList<String> waypoints = new ArrayList<>();
-                ArrayList<String> route = new ArrayList<>();
-                route.add(name);
-                route.add(start);
-                route.add(dest);
-                for (WaypointItem item : mWaypointList){
-                    waypoints.add(item.getName());
+                if (!mRouteStart.getText().toString().equals("")
+                        && !mRouteDestination.getText().toString().equals("")){
+                    String name;
+                    name = mRouteName.getText().toString();
+                    String start = mRouteStart.getText().toString();
+                    String dest = mRouteDestination.getText().toString();
+                    ArrayList<String> waypoints = new ArrayList<>();
+                    ArrayList<String> route = new ArrayList<>();
+                    Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                    route.add(name);
+                    route.add(start);
+                    route.add(dest);
+                    if (!mWaypointList.isEmpty()){
+                        for (WaypointItem item : mWaypointList){
+                            waypoints.add(item.getName());
+                        }
+                        main.putStringArrayListExtra("waypoints", waypoints);
+                    }
+                    main.putExtra("position", position);
+                    main.putStringArrayListExtra("route", route);
+
+                    startActivity(main);
+                    // Finish activity
+                    finish();
                 }
-                Intent main = new Intent(getApplicationContext(), MainActivity.class);
-                main.putStringArrayListExtra("route", route);
-                main.putStringArrayListExtra("waypoints", waypoints);
-                startActivity(main);
-                // Finish activity
+            }
+        });
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent back = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(back);
                 finish();
             }
         });
@@ -175,6 +190,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onDeleteClick(int position) {
                 removeItem(position);
+                addMarkers();
             }
         });
     }
@@ -199,7 +215,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void createExampleRoute() {
-        mWaypointList = new ArrayList<>();
         mWaypointList.add(new WaypointItem("Karjaa"));
     }
 
@@ -247,6 +262,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     }
     @Override
     protected void onPause() {
+
         mapView.onPause();
         super.onPause();
     }
@@ -263,42 +279,46 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-        addMarkers();
-        updateShortestRoute();
+        gMap.setMinZoomPreference(3);
+        if (getIntent().getExtras() != null){
+            loadData();
+        } else {
+            createExampleRoute();
+        }
     }
 
     private void resetMap(){
-        if (line != null){
-            line.remove();
-        }
         if (!markers.isEmpty()){
-            for (Marker marker : markers){
-                marker.remove();
-            }
+            gMap.clear();
         }
-
     }
     private void addMarkers() {
-        markers = new ArrayList<>();
         resetMap();
-        MarkerOptions home = new MarkerOptions()
-                .position(getLatLng(mRouteStart.getText().toString()))
-                .title("Home")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        MarkerOptions dest = new MarkerOptions()
-                .position(getLatLng(mRouteDestination.getText().toString()))
-                .title("Destination")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        Marker mhome = gMap.addMarker(home);
-        Marker mDest = gMap.addMarker(dest);
-        markers.add(mhome);
-        markers.add(mDest);
-        for (WaypointItem item : mWaypointList){
-            markers.add(gMap.addMarker(new MarkerOptions().position(getLatLng(item.getName())).title(item.getName())));
+        MarkerOptions home = new MarkerOptions();
+        MarkerOptions dest = new MarkerOptions();
+        if (!mRouteStart.getText().toString().equals("")){
+            home.position(getLatLng(mRouteStart.getText().toString()))
+                    .title("Home")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            Marker mhome = gMap.addMarker(home);
+            markers.add(mhome);
+            gMap.moveCamera(CameraUpdateFactory.newLatLng(home.getPosition()));
         }
-        gMap.setMinZoomPreference(3);
-        gMap.moveCamera(CameraUpdateFactory.newLatLng(home.getPosition()));
-
+        if (!mRouteDestination.getText().toString().equals("")){
+            dest.position(getLatLng(mRouteDestination.getText().toString()))
+                    .title("Destination")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            Marker mDest = gMap.addMarker(dest);
+            markers.add(mDest);
+        }
+        if (!mWaypointList.isEmpty()){
+            for (WaypointItem item : mWaypointList){
+                markers.add(gMap.addMarker(new MarkerOptions().position(getLatLng(item.getName())).title(item.getName())));
+            }
+        }
+        if (home.getPosition() != null && dest.getPosition() != null){
+            updateShortestRoute();
+        }
     }
 
     // Add a marker to the google map
@@ -336,7 +356,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     // Draw the shortest route on the map
     private void updateShortestRoute() {
-        //TODO: Draw the shorest route using Directions API
         String url = "https://maps.googleapis.com/maps/api/directions/json?";
         String params = "origin=" + mRouteStart.getText().toString();
         params += "&destination=" + mRouteDestination.getText().toString();
