@@ -3,8 +3,6 @@ package com.example.routebuilder;
 import android.app.Activity;
 import android.content.Context;
 
-import com.example.routebuilder.Route;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,7 +11,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class FileIO {
 

@@ -11,55 +11,63 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    // Buttons
     private Button mButtonAddRoute;
 
     // RecyclerView variables
     private RecyclerView mRecyclerView;
     private RouteAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    // List that stores the items needed for recyclerView
     ArrayList<RouteItem> routeList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Start all buttons on the main activity
-        setButtons();
         routeList = new ArrayList<>();
-        // Load previous routes from file storage
+        setButtons();
         loadFromFile();
-        // Add the new route if coming from Map class
         addNewRoute();
         buildRecycleView();
     }
 
+    // Load routes previously saved
     private void loadFromFile() {
         // If a save file exists
         if( FileIO.loadRoutes(this) != null) {
             // Load the saved routes into the routeList
             routeList = FileIO.loadRoutes(this);
-            System.out.println("Loaded data: " + routeList);
         }
     }
 
-
+    // Saves files to the device
     private void saveToFile() {
         // Save the routeList to a file
         FileIO.saveRoutes(routeList, this);
-        System.out.println("Saved data: " + routeList);
     }
 
     // Adds a new route to the recyclerView with data from the Map class
     private void addNewRoute() {
         // Check that the gets exists
-        if (getIntent().getStringArrayListExtra("route") != null
-                && getIntent().getStringArrayListExtra("waypoints") != null){
-            // Route name, start, destination
+        if (getIntent().getStringArrayListExtra("route") != null){
+
+            ArrayList<String> waypoints = new ArrayList<>();
             ArrayList<String> route = getIntent().getStringArrayListExtra("route");
             // All waypoints
-            ArrayList<String> waypoints = getIntent().getStringArrayListExtra("waypoints");
+            if (getIntent().getStringArrayListExtra("waypoints") != null){
+                waypoints = getIntent().getStringArrayListExtra("waypoints");
+            }
             // Create a routeItem with the necessary data
-            routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+            // -1 is sent if a new route was created, else it is the position when the route to update is
+            if (getIntent().getExtras().getInt("position") != -1){
+                int pos = getIntent().getExtras().getInt("position");
+                // Remove the old route, and replace it with an updated version
+                routeList.remove(pos);
+                routeList.add(pos, new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+            } else {
+                // 0 = name, 1 = start, 2 = destination
+                routeList.add(new RouteItem(route.get(0), route.get(1), route.get(2),waypoints));
+            }
         }
     }
 
@@ -97,8 +105,10 @@ public class MainActivity extends AppCompatActivity {
         route.add(Route.getStart());
         route.add(Route.getDestination());
         // Put them into the map intent as StringArrayList
+        map.putExtra("position", position);
         map.putStringArrayListExtra("route", route);
         map.putStringArrayListExtra("waypoints", Route.getWaypoints());
+        map.putExtra("new", false);
         // Start activity
         startActivity(map);
         finish();
@@ -118,20 +128,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Start a map intent and open its
                 Intent intent = new Intent(getApplicationContext(), Map.class);
+                intent.putExtra("new", true);
                 startActivity(intent);
                 saveToFile();
                 finish();
             }
         });
-    }
-
-    // Add a new route to the routelist
-    public void addToRouteList(RouteItem newRoute){
-        ArrayList<String> array = new ArrayList<>();
-        array.add("0");
-        array.add("1");
-        routeList.add(new RouteItem("name", "start", "end", array));
-        routeList.add(newRoute);
-        mAdapter.notifyDataSetChanged();
     }
 }

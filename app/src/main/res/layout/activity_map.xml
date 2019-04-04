@@ -35,6 +35,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerView_waypoints" />
 
+    <Button
+        android:id="@+id/button_back"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="98dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorAccent"
+        android:text="Back"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        app:layout_constraintStart_toStartOf="@+id/recyclerView_waypoints"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView_waypoints" />
+
     <EditText
         android:id="@+id/et_AddWaypoint"
         android:layout_width="249dp"
@@ -87,7 +99,8 @@
         android:textColorHint="@color/colorWhiteText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Route" />
 
     <EditText
         android:id="@+id/et_SetStart"

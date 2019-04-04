@@ -18,9 +18,11 @@ public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.Waypoi
         void onDeleteClick(int position);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener){
+    void setOnItemClickListener(OnItemClickListener listener){
         mListener = listener;
     }
+
+    // ViewHolder class for the RecyclerView
     public static class WaypointViewHolder extends RecyclerView.ViewHolder{
         public ImageView mDeleteWaypoint;
         public TextView mTextView;
@@ -43,10 +45,11 @@ public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.Waypoi
         }
     }
 
-
+    // Adapter for the RecyclerView
     public WaypointAdapter(ArrayList<WaypointItem> waypointList){
         mWaypointList = waypointList;
     }
+
     @NonNull
     @Override
     public WaypointViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
